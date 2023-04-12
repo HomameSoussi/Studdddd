@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Book Summary Generator</title>
+</head>
+<body>
+	<h1>Book Summary Generator</h1>
+	<form>
+		<label for="book-title">Book Title:</label>
+		<input type="text" id="book-title" name="book-title"><br><br>
+		<label for="author">Author:</label>
+		<input type="text" id="author" name="author"><br><br>
+		<button type="button" onclick="generateSummary()">Generate Summary</button>
+	</form>
+	<div id="summary"></div>
+
+	<script src="https://cdn.jsdelivr.net/npm/@openai/api@0.6.1/dist/openai.min.js"></script>
+	<script>
+		openai.api_key = "sk-XXX";
+		openai.organization = "org-XX";
+
+function generateSummary() {
+    var bookTitle = document.getElementById("book-title").value;
+    var author = document.getElementById("author").value;
+    var prompt = `Write a thorough yet concise summary of **${bookTitle}**. Concentrate on only the most important takeaways and primary points from the book that together will give me a solid overview and understanding of the book and its topic. \n\nInclude all of the following in your summary: \n\n- Main topic or theme of the book\n- Key ideas or arguments presented\n- Chapter titles or main sections of the book with a paragraph on each\n- Key takeaways or conclusions\n- Author's background and qualifications\n- Comparison to other books on the same subject\n- Target audience or intended readership\n- Reception or critical response to the book\n- Publisher and First Published Date\n- Recommendations [Other similar books on the same topic]\n\nTo sum up:  **The book's biggest takeaway and point in a singular sentence**\n\n## Main topic or theme\n\n- \n\n## Key ideas or arguments presented\n\n- \n\n## Chapter titles or main sections of the book\n\n### \n\n- \n\n## Key takeaways or conclusions\n\n- \n\n## Author's background and qualifications\n\n- \n\n## Comparison to other books on the same subject\n\n- \n\n## Target audience or intended readership\n\n- \n\n## Reception or critical response to the book\n\n- \n\n## Publisher and First Published Date\n\n- \n\n## Recommendations\n\n- `;
+    if (author) {
+        prompt += `Other books by **${author}** that are related to **${bookTitle}** are: `;
+    }
+    var openaiApiKey = process.env.OPENAI_API_KEY;
+    var openaiOrgId = process.env.OPENAI_ORG_ID;
+    var completion = openai.Completion.create({
+        engine: "text-davinci-002",
+        prompt: prompt,
+        max_tokens: 1024,
+        n: 1,
+        stop: ["###"],
+        api_key: openaiApiKey,
+        organization_id: openaiOrgId
+    })
+    .then(function(response) {
+        var summary = response.choices[0].text;
+        document.getElementById("summary").innerHTML = summary;
+    })
+    .catch(function(error) {
+        console.log(error);
+    })
+}
+
+	</script>
+</body>
+</html>
